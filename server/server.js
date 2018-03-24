@@ -22,6 +22,8 @@ app.post('/todos', (req, res) => {
         res.send(doc);
     }, (err) => {
         res.status(400).send(err);
+    }).catch((e) => {
+        res.status(400).send(err);
     });
 });
 
@@ -79,7 +81,7 @@ app.patch('/todos/:id', (req, res) => {
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']); //subset of things that user passed us
     if (!ObjectID.isValid(id)) {
-        return res.status(404).send({
+        return res.sendStatus(404).send({
             text: 'Invalid id'
         })
     }
@@ -92,16 +94,26 @@ app.patch('/todos/:id', (req, res) => {
 
     Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
         if (!todo) {
-           return res.status(404).send({
+           return res.sendStatus(404).send({
                 text: 'Invalid entry'
             })
         }
         res.send({todo});
     }).catch((e) => {
-        res.status(400).send();
+        res.sendStatus(400).send();
     });
 });
 
+app.post('/users', (req, res) => {
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User(res);
+
+    user.save().then((usr) => {
+        res.send(usr);
+    },(err) => {
+        res.send(400).send(err);
+    });
+});
 
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
