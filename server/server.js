@@ -106,12 +106,12 @@ app.patch('/todos/:id', (req, res) => {
 
 app.post('/users', (req, res) => {
     var body = _.pick(req.body, ['email', 'password']);
-    var user = new User(res);
+    var user = new User(body);
 
     user.save().then((usr) => {
         res.send(usr);
-    },(err) => {
-        res.send(400).send(err);
+    }).catch((e) => {
+        res.send(400).send(e);
     });
 });
 
